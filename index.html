@@ -171,18 +171,28 @@
         const scoreDisplay = document.getElementById('score');
         const livesDisplay = document.getElementById('lives');
 
-        // Configurações do jogo
-        const PADDLE_WIDTH = 120;
-        const PADDLE_HEIGHT = 20;
-        const BALL_RADIUS = 10;
-        const BRICK_WIDTH = 60;
-        const BRICK_HEIGHT = 25;
-        const BRICK_GAP = 5;
+        // Calcular escala baseado no tamanho do canvas
+        const REFERENCE_WIDTH = 800;
+        const scale = canvas.width / REFERENCE_WIDTH;
+
+        // Configurações do jogo (escaladas)
+        const PADDLE_WIDTH = 120 * scale;
+        const PADDLE_HEIGHT = 20 * scale;
+        const BALL_RADIUS = 10 * scale;
+        const BRICK_WIDTH = 60 * scale;
+        const BRICK_HEIGHT = 25 * scale;
+        const BRICK_GAP = 5 * scale;
+
+        // Tamanhos de fonte escalados
+        const BRICK_FONT_SIZE = Math.max(14, 20 * scale);
+        const PADDLE_FONT_SIZE = Math.max(10, 14 * scale);
+        const MESSAGE_FONT_SIZE = Math.max(20, 24 * scale);
+        const VICTORY_FONT_SIZE = Math.max(32, 48 * scale);
 
         // Objetos do jogo
         const paddle = {
             x: canvas.width / 2 - PADDLE_WIDTH / 2,
-            y: canvas.height - 30,
+            y: canvas.height - 30 * scale,
             width: PADDLE_WIDTH,
             height: PADDLE_HEIGHT,
             dx: 0
@@ -190,7 +200,7 @@
 
         const ball = {
             x: canvas.width / 2,
-            y: canvas.height - 60,
+            y: canvas.height - 60 * scale,
             radius: BALL_RADIUS,
             dx: 0,
             dy: 0
@@ -224,8 +234,8 @@
             bricks = [];
             const bricksPerRow = 10;
             const brickRows = 5;
-            const offsetLeft = 25;
-            const offsetTop = 40;
+            const offsetLeft = 25 * scale;
+            const offsetTop = 40 * scale;
 
             for (let row = 0; row < brickRows; row++) {
                 for (let col = 0; col < bricksPerRow; col++) {
@@ -254,7 +264,7 @@
         function drawBricks() {
             bricks.forEach(brick => {
                 if (brick.active) {
-                    ctx.font = '20px Arial';
+                    ctx.font = `${BRICK_FONT_SIZE}px Arial`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText(brick.emoji, brick.x + BRICK_WIDTH / 2, brick.y + BRICK_HEIGHT / 2);
@@ -264,7 +274,7 @@
 
         // Desenho da plataforma
         function drawPaddle() {
-            ctx.font = 'bold 14px Arial';
+            ctx.font = `bold ${PADDLE_FONT_SIZE}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('Croissant Lover', paddle.x + PADDLE_WIDTH / 2, paddle.y + PADDLE_HEIGHT / 2);
@@ -423,7 +433,7 @@
                 } else {
                     // Reset
                     ball.x = canvas.width / 2;
-                    ball.y = canvas.height - 60;
+                    ball.y = canvas.height - 60 * scale;
                     const velocity = getRandomBallVelocity();
                     ball.dx = velocity.dx;
                     ball.dy = velocity.dy;
@@ -453,7 +463,7 @@
 
             // Mensagem inicial
             if (!gameStarted && gameActive) {
-                ctx.font = 'bold 24px Arial';
+                ctx.font = `bold ${MESSAGE_FONT_SIZE}px Arial`;
                 ctx.fillStyle = '#4ecdc4';
                 ctx.textAlign = 'center';
                 ctx.fillText('Click or press SPACE to start', canvas.width / 2, canvas.height / 2);
@@ -461,10 +471,10 @@
 
             // Verificar vitória final
             if (!gameActive) {
-                ctx.font = 'bold 48px Arial';
+                ctx.font = `bold ${VICTORY_FONT_SIZE}px Arial`;
                 ctx.fillStyle = '#4ecdc4';
                 ctx.textAlign = 'center';
-                ctx.fillText('🎉 VICTORY! You are a true 🥐 with stuff inside lover! 🎉', canvas.width / 2, canvas.height / 2 - 30);
+                ctx.fillText('🎉 VICTORY! You are a true 🥐 with stuff inside lover! 🎉', canvas.width / 2, canvas.height / 2 - 30 * scale);
             }
 
             // Loop
