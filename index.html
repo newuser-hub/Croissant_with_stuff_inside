@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Breakout - Croissant Destruction [Adidas Edition]</title>
     <style>
         * {
@@ -18,42 +18,49 @@
             min-height: 100vh;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 5px;
+            overflow: hidden;
         }
 
         .container {
             text-align: center;
+            width: 100%;
+            max-width: 900px;
         }
 
         h1 {
             color: #fff;
-            margin-bottom: 20px;
+            margin: 10px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: clamp(20px, 5vw, 36px);
         }
 
         .game-info {
             color: #fff;
-            margin-bottom: 15px;
-            font-size: 18px;
+            margin: 10px 0;
+            font-size: clamp(14px, 3vw, 18px);
             display: flex;
             justify-content: space-around;
-            width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            width: 100%;
         }
 
         canvas {
             display: block;
             background: linear-gradient(to bottom, #0a1e35, #1a3a52);
-            border: 4px solid #ff6b6b;
+            border: 3px solid #ff6b6b;
             border-radius: 8px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+            touch-action: none;
         }
 
         .controls {
             color: #fff;
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 10px;
+            font-size: clamp(12px, 2.5vw, 14px);
         }
 
         .game-over {
@@ -132,7 +139,7 @@
         </div>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="controls">
-            💡 Use your mouse to move the paddle | Click or Space to start
+            💡 Move your finger or mouse to move the paddle | Tap or Click to start
         </div>
     </div>
 
@@ -145,7 +152,20 @@
     </div>
 
     <script>
+        // Ajustar tamanho do canvas para mobile e desktop
         const canvas = document.getElementById('gameCanvas');
+        const isMobile = window.innerWidth < 600;
+        
+        if (isMobile) {
+            const width = Math.min(window.innerWidth - 20, 400);
+            const height = width * 0.75;
+            canvas.width = width;
+            canvas.height = height;
+        } else {
+            canvas.width = 800;
+            canvas.height = 600;
+        }
+
         const ctx = canvas.getContext('2d');
         const gameOverScreen = document.getElementById('gameOverScreen');
         const scoreDisplay = document.getElementById('score');
@@ -300,6 +320,23 @@
             if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
         });
 
+        // Suporte a touch para telemóvel
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const touchX = touch.clientX - rect.left;
+            paddle.x = touchX - PADDLE_WIDTH / 2;
+            
+            // Limitar o paddle aos limites do canvas
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+        }, { passive: false });
+
+        // Iniciar o jogo com touch
+        canvas.addEventListener('touchstart', startGame);
+        canvas.addEventListener('click', startGame);
+
         // Iniciar o jogo
         function startGame() {
             if (!gameStarted && gameActive) {
@@ -310,7 +347,6 @@
             }
         }
 
-        document.addEventListener('click', startGame);
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
