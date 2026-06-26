@@ -192,7 +192,7 @@
         // Gerar velocidade aleatória para a bola
         function getRandomBallVelocity() {
             const angle = (Math.random() * 60 - 30) * Math.PI / 180; // -30 a +30 graus
-            const speed = 5;
+            const speed = 7; // Aumentado de 5 para 7
             return {
                 dx: Math.sin(angle) * speed,
                 dy: -Math.abs(Math.cos(angle)) * speed
@@ -214,25 +214,30 @@
                         y: offsetTop + row * (BRICK_HEIGHT + BRICK_GAP),
                         width: BRICK_WIDTH,
                         height: BRICK_HEIGHT,
-                        active: true
+                        active: true,
+                        emoji: '🥐' // Nível 1 começa com croissants
                     });
                 }
             }
         }
 
+        // Transformar croissants em alimentos aleatórios
+        function transformBricksToFood() {
+            bricks.forEach(brick => {
+                if (brick.active && brick.emoji === '🥐') {
+                    brick.emoji = level2Foods[Math.floor(Math.random() * level2Foods.length)];
+                }
+            });
+        }
+
         // Desenho dos tijolos com emoji do nível atual
         function drawBricks() {
-            let currentEmoji = '🥐'; // Nível 1
-            if (currentLevel === 2 && level2Emoji) {
-                currentEmoji = level2Emoji; // Nível 2 com alimento aleatório
-            }
-            
             bricks.forEach(brick => {
                 if (brick.active) {
                     ctx.font = '20px Arial';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText(currentEmoji, brick.x + BRICK_WIDTH / 2, brick.y + BRICK_HEIGHT / 2);
+                    ctx.fillText(brick.emoji, brick.x + BRICK_WIDTH / 2, brick.y + BRICK_HEIGHT / 2);
                 }
             });
         }
@@ -242,7 +247,7 @@
             ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('☠️ A. Antunes ☠️', paddle.x + PADDLE_WIDTH / 2, paddle.y + PADDLE_HEIGHT / 2);
+            ctx.fillText('Croissant Lover', paddle.x + PADDLE_WIDTH / 2, paddle.y + PADDLE_HEIGHT / 2);
         }
 
         // Desenho da bola (Adidas Trefoil)
@@ -322,7 +327,13 @@
                         ball.y + ball.radius > brick.y &&
                         ball.y - ball.radius < brick.y + brick.height) {
                         
-                        brick.active = false;
+                        // Se é croissant, transformar em alimento; se é alimento, destruir
+                        if (brick.emoji === '🥐') {
+                            brick.emoji = level2Foods[Math.floor(Math.random() * level2Foods.length)];
+                        } else {
+                            brick.active = false;
+                        }
+                        
                         score += 10;
                         scoreDisplay.textContent = score;
                         
@@ -387,18 +398,10 @@
             checkBrickCollision();
             checkPaddleCollision();
 
-            // Verificar vitória / passar de nível
-            if (bricks.every(brick => !brick.active)) {
-                gameStarted = false;
-                
-                if (currentLevel === 1) {
-                    // Passou nível 1, vai para nível 2
-                    levelTransitioning = true;
-                    transitionTimer = 0;
-                } else if (currentLevel === 2) {
-                    // Passou nível 2, vitória final
-                    gameActive = false;
-                }
+            // Verificar vitória
+            if (bricks.every(brick => !brick.active || brick.emoji === '🥐') === false && 
+                bricks.filter(brick => brick.active && brick.emoji !== '🥐').length === 0) {
+                gameActive = false;
             }
         }
 
@@ -413,47 +416,19 @@
             drawBall();
 
             // Mensagem inicial
-            if (!gameStarted && gameActive && !levelTransitioning) {
+            if (!gameStarted && gameActive) {
                 ctx.font = 'bold 24px Arial';
                 ctx.fillStyle = '#4ecdc4';
                 ctx.textAlign = 'center';
                 ctx.fillText('Click or press SPACE to start', canvas.width / 2, canvas.height / 2);
             }
 
-            // Transição de nível
-            if (levelTransitioning) {
-                transitionTimer += 1;
-                if (transitionTimer < 120) {
-                    ctx.font = 'bold 40px Arial';
-                    ctx.fillStyle = `rgba(78, 205, 196, ${Math.sin(transitionTimer / 30) * 0.5 + 0.5})`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    
-                    // Escolher alimento aleatório se ainda não foi escolhido
-                    if (!level2Emoji) {
-                        level2Emoji = level2Foods[Math.floor(Math.random() * level2Foods.length)];
-                    }
-                    
-                    ctx.fillText(`Level 2 - ${level2Emoji}`, canvas.width / 2, canvas.height / 2);
-                } else {
-                    // Iniciar nível 2
-                    currentLevel++;
-                    levelTransitioning = false;
-                    ball.x = canvas.width / 2;
-                    ball.y = canvas.height - 60;
-                    const velocity = getRandomBallVelocity();
-                    ball.dx = velocity.dx;
-                    ball.dy = velocity.dy;
-                    initBricks();
-                }
-            }
-
             // Verificar vitória final
-            if (!gameActive && currentLevel === 2 && !levelTransitioning) {
+            if (!gameActive) {
                 ctx.font = 'bold 48px Arial';
                 ctx.fillStyle = '#4ecdc4';
                 ctx.textAlign = 'center';
-                ctx.fillText('🎉 VICTORY! You are a true 🥐 with stuff inside lover! 🎉', canvas.width / 2, canvas.height / 2);
+                ctx.fillText('🎉 VICTORY! You are a true 🥐 with stuff inside lover! 🎉', canvas.width / 2, canvas.height / 2 - 30);
             }
 
             // Loop
