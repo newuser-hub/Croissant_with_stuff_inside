@@ -1,490 +1,490 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Breakout - Croissant Destruction [Adidas Edition]</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 5px;
-            overflow: hidden;
-        }
-
-        .container {
-            text-align: center;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        h1 {
-            color: #fff;
-            margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-size: clamp(20px, 5vw, 36px);
-        }
-
-        .game-info {
-            color: #fff;
-            margin: 10px 0;
-            font-size: clamp(14px, 3vw, 18px);
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-        }
-
-        canvas {
-            display: block;
-            background: linear-gradient(to bottom, #0a1e35, #1a3a52);
-            border: 3px solid #ff6b6b;
-            border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            margin: 0 auto;
-            max-width: 100%;
-            height: auto;
-            touch-action: none;
-        }
-
-        .controls {
-            color: #fff;
-            margin-top: 10px;
-            font-size: clamp(12px, 2.5vw, 14px);
-        }
-
-        .game-over {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .game-over.show {
-            display: flex;
-        }
-
-        .game-over-content {
-            text-align: center;
-            color: #ff6b6b;
-            font-size: 48px;
-            animation: pulse 0.6s ease-in-out;
-        }
-
-        .game-over-message {
-            color: #fff;
-            font-size: 32px;
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
-
-        .restart-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-
-        .restart-btn:hover {
-            background: #ff5252;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .score {
-            color: #4ecdc4;
-            font-weight: bold;
-        }
-
-        .lives {
-            color: #ff6b6b;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14283e">
+  <title>🥐 Croissant Destruction</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh; min-height: 100dvh; margin: 0; padding: 14px;
+      display: flex; justify-content: center; align-items: center;
+      background: radial-gradient(circle at top, #2c5a84, #101d32 75%);
+      color: #f5f8fc;
+    }
+    .container { width: min(100%, 800px); text-align: center; }
+    h1 { font-size: clamp(21px, 4vw, 35px); margin: 4px 0 12px; }
+    .hud {
+      display: flex; justify-content: space-between; gap: 8px; align-items: center;
+      padding: 7px 4px 11px; font-size: clamp(12px, 2.6vw, 17px);
+      font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .hud strong { color: #7ef2dc; }
+    .stage { position: relative; width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid #ff9d68; box-shadow: 0 10px 35px #0008; }
+    canvas {
+      display: block; width: 100%; height: auto; aspect-ratio: 4 / 3;
+      background: linear-gradient(#0b1b31, #1a3b53); touch-action: none;
+      cursor: crosshair;
+    }
+    .overlay {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      padding: 12px; background: #081625df; z-index: 2;
+    }
+    [hidden] { display: none !important; }
+    .panel {
+      width: min(100%, 430px); max-height: 100%; overflow-y: auto;
+      padding: clamp(12px, 3.5vw, 26px); border-radius: 16px;
+      background: #183550; border: 1px solid #7396a9;
+      box-shadow: 0 14px 36px #0007;
+    }
+    .panel h2 { margin: 0 0 8px; color: #ffd1a8; font-size: clamp(19px, 4vw, 28px); }
+    .panel p { margin: 6px 0 12px; line-height: 1.4; font-size: clamp(12px, 2.4vw, 15px); }
+    .speed-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 12px 0; }
+    button {
+      font: inherit; cursor: pointer; color: #fff;
+      border: 1px solid #8ba9bc; border-radius: 9px;
+      padding: 9px 11px; background: #274b68; transition: background .15s;
+    }
+    button:hover:not(:disabled), button:focus-visible { background: #396c90; }
+    button:focus-visible { outline: 3px solid #ffe5ab; outline-offset: 2px; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .speed-choice { padding: 10px 3px; line-height: 1.4; font-size: clamp(12px, 2.5vw, 15px); }
+    .speed-choice span { display: block; font-size: .78em; opacity: .86; }
+    .speed-choice[aria-pressed="true"] { background: #076c70; border: 2px solid #9cf3d6; padding: 9px 2px; }
+    .primary { background: #ed7449; color: #151e28; border-color: #ffa981; font-weight: 800; }
+    .primary:hover:not(:disabled), .primary:focus-visible { background: #ffac69; }
+    .actions { display: flex; gap: 9px; justify-content: center; flex-wrap: wrap; }
+    .actions button { min-width: 120px; }
+    .ready-hint {
+      position: absolute; z-index: 1; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); width: 85%;
+      padding: 11px; border-radius: 10px;
+      background: #071a2ddc; color: #aaf7e5; font-weight: 700;
+      pointer-events: none; font-size: clamp(12px, 2.5vw, 18px);
+    }
+    .toolbar { display: flex; gap: 9px; justify-content: center; margin-top: 12px; }
+    .toolbar button { min-width: 115px; }
+    .instructions { font-size: clamp(12px, 2.6vw, 14px); line-height: 1.45; color: #d1e0ef; margin: 10px 0 0; }
+    .instructions strong { color: #fff0bd; }
+    @media (max-width: 460px) {
+      body { padding: 8px; align-items: flex-start; }
+      h1 { margin: 7px 0; }
+      .hud { padding: 4px 2px 8px; }
+      .panel { padding: 11px; }
+      .panel p { margin: 4px 0 8px; }
+      .speed-options { margin: 8px 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🥐 CROISSANT DESTRUCTION 🥐</h1>
-        <div class="game-info">
-            <div>Score: <span class="score" id="score">0</span></div>
-            <div>Lives: <span class="lives" id="lives">1</span> ❤️</div>
-        </div>
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div class="controls">
-            💡 Move your finger or mouse to move the paddle | Tap or Click to start
-        </div>
+  <main class="container">
+    <h1>🥐 CROISSANT DESTRUCTION 🥐</h1>
+    <div class="hud" aria-live="polite">
+      <span>Pontos: <strong id="score">0</strong></span>
+      <span>Vidas: <strong id="lives">3</strong> ❤️</span>
+      <span>Restantes: <strong id="remaining">50</strong></span>
+      <span>Recorde: <strong id="best">0</strong></span>
     </div>
-
-    <div class="game-over" id="gameOverScreen">
-        <div class="game-over-content">
-            <div>GAME OVER</div>
-            <div class="game-over-message">Next time, be more careful 😈 ...and put stuff inside your croissant!</div>
-            <button class="restart-btn" onclick="location.reload()">RESTART</button>
-        </div>
+    <div class="stage">
+      <canvas id="gameCanvas" width="800" height="600" aria-label="Jogo de destruir croissants"></canvas>
+      <div id="readyHint" class="ready-hint" hidden>Toca no campo ou prime Espaço para lançar a bola!</div>
+      <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+        <section class="panel" id="menuPanel">
+          <h2 id="overlayTitle">Preparado para jogar?</h2>
+          <p>Escolhe a velocidade da bola <strong>antes de começar</strong>.</p>
+          <div class="speed-options" role="group" aria-label="Velocidade da bola">
+            <button type="button" class="speed-choice" data-speed="slow" aria-pressed="false">Calma<span>Mais fácil</span></button>
+            <button type="button" class="speed-choice" data-speed="normal" aria-pressed="true">Normal<span>Equilibrada</span></button>
+            <button type="button" class="speed-choice" data-speed="fast" aria-pressed="false">Rápida<span>Desafio</span></button>
+          </div>
+          <p>Acerta duas vezes em cada croissant: primeiro descobre o recheio, depois destrói-o. Tens 3 vidas.</p>
+          <button type="button" id="startButton" class="primary">Começar a jogar</button>
+        </section>
+        <section class="panel" id="pausePanel" hidden>
+          <h2>⏸ Jogo em pausa</h2>
+          <p>A bola está parada. Retoma quando quiseres.</p>
+          <div class="actions">
+            <button type="button" id="resumeButton" class="primary">Continuar</button>
+            <button type="button" id="pauseNewButton">Novo jogo</button>
+          </div>
+        </section>
+        <section class="panel" id="endPanel" hidden>
+          <h2 id="endTitle">Fim do jogo</h2>
+          <p id="endText"></p>
+          <button type="button" id="againButton" class="primary">Jogar novamente</button>
+        </section>
+      </div>
     </div>
+    <div class="toolbar">
+      <button type="button" id="pauseButton" disabled>⏸ Pausa</button>
+      <button type="button" id="newButton">↻ Novo jogo</button>
+    </div>
+    <p class="instructions">📱 <strong>Rato ou dedo</strong> para mover a plataforma. ⌨️ <strong>← →</strong> ou <strong>A / D</strong> para mover, <strong>P</strong> para pausar e <strong>Espaço</strong> para lançar.</p>
+  </main>
+  <script>
+    "use strict";
 
-    <script>
-        // Ajustar tamanho do canvas para mobile e desktop
-        const canvas = document.getElementById('gameCanvas');
-        const isMobile = window.innerWidth < 600;
-        
-        if (isMobile) {
-            const width = Math.min(window.innerWidth - 20, 400);
-            const height = width * 0.75;
-            canvas.width = width;
-            canvas.height = height;
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width;
+    const H = canvas.height;
+    const speedOptions = { slow: 325, normal: 440, fast: 565 }; // unidades por segundo
+    const brickFoods = ["🥑", "🥝", "🍗", "🥬", "🍓", "🍇", "🍊", "🌶️", "🥕", "🫒", "🧀", "🍫", "🌽", "🍍", "🍒"];
+    const scoreEl = document.getElementById("score");
+    const livesEl = document.getElementById("lives");
+    const remainingEl = document.getElementById("remaining");
+    const bestEl = document.getElementById("best");
+    const overlay = document.getElementById("overlay");
+    const menuPanel = document.getElementById("menuPanel");
+    const pausePanel = document.getElementById("pausePanel");
+    const endPanel = document.getElementById("endPanel");
+    const readyHint = document.getElementById("readyHint");
+    const pauseButton = document.getElementById("pauseButton");
+    const speedButtons = Array.from(document.querySelectorAll(".speed-choice"));
+
+    const paddle = { x: 325, y: 555, width: 150, height: 18 };
+    const ball = { x: 400, y: 540, r: 10, vx: 0, vy: 0 };
+    const keys = { left: false, right: false };
+
+    let state = "menu"; // menu, ready, playing, paused, won, lost
+    let stateBeforePause = "playing";
+    let selectedSpeed = "normal";
+    let score = 0;
+    let lives = 3;
+    let remaining = 50;
+    let bricks = [];
+    let bestScore = 0;
+    let lastFrame = 0;
+    let accumulator = 0;
+    const STEP = 1 / 120; // física independente de monitores a 60/120/144 Hz
+
+    try { bestScore = Number(localStorage.getItem("croissant-best-v2")) || 0; } catch (_) {}
+
+    function updateHud() {
+      scoreEl.textContent = score;
+      livesEl.textContent = lives;
+      remainingEl.textContent = remaining;
+      bestEl.textContent = Math.max(bestScore, score);
+    }
+
+    function setState(next) {
+      state = next;
+      const showMenu = next === "menu";
+      const showPause = next === "paused";
+      const showEnd = next === "won" || next === "lost";
+      overlay.hidden = !(showMenu || showPause || showEnd);
+      menuPanel.hidden = !showMenu;
+      pausePanel.hidden = !showPause;
+      endPanel.hidden = !showEnd;
+      readyHint.hidden = next !== "ready";
+      pauseButton.disabled = !(next === "ready" || next === "playing" || next === "paused");
+      pauseButton.textContent = showPause ? "▶ Continuar" : "⏸ Pausa";
+      // Ao sair de um jogo, não deixar uma tecla virtualmente premida.
+      if (showMenu || showEnd) { keys.left = false; keys.right = false; }
+    }
+
+    function buildBricks() {
+      bricks = [];
+      const columns = 10;
+      const rows = 5;
+      const width = 60;
+      const height = 27;
+      const gap = 6;
+      const left = (W - (columns * width + (columns - 1) * gap)) / 2;
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < columns; col++) {
+          bricks.push({
+            x: left + col * (width + gap),
+            y: 65 + row * (height + gap),
+            w: width, h: height, emoji: "🥐", active: true
+          });
+        }
+      }
+      remaining = bricks.length;
+    }
+
+    function attachBall() {
+      ball.x = paddle.x + paddle.width / 2;
+      ball.y = paddle.y - ball.r - 4;
+      ball.vx = 0;
+      ball.vy = 0;
+    }
+
+    function launchBall() {
+      if (state !== "ready") return;
+      // Evita trajetórias totalmente verticais e mantém a velocidade selecionada.
+      const direction = Math.random() < .5 ? -1 : 1;
+      const angle = direction * (15 + Math.random() * 22) * Math.PI / 180;
+      const speed = speedOptions[selectedSpeed];
+      ball.vx = Math.sin(angle) * speed;
+      ball.vy = -Math.cos(angle) * speed;
+      accumulator = 0;
+      setState("playing");
+    }
+
+    function startNewGame() {
+      score = 0;
+      lives = 3;
+      paddle.x = (W - paddle.width) / 2;
+      buildBricks();
+      attachBall();
+      updateHud();
+      setState("ready");
+      launchBall();
+    }
+
+    function showMenu() {
+      accumulator = 0;
+      setState("menu");
+    }
+
+    function togglePause() {
+      if (state === "playing" || state === "ready") {
+        stateBeforePause = state;
+        setState("paused");
+      } else if (state === "paused") {
+        accumulator = 0;
+        setState(stateBeforePause);
+      }
+    }
+
+    function finish(won) {
+      if (score > bestScore) {
+        bestScore = score;
+        try { localStorage.setItem("croissant-best-v2", String(bestScore)); } catch (_) {}
+      }
+      document.getElementById("endTitle").textContent = won ? "🎉 Vitória!" : "💔 Fim do jogo";
+      document.getElementById("endText").textContent = won
+        ? "Destruíste todos os croissants! Pontuação: " + score + "."
+        : "Ficaste sem vidas. Pontuação: " + score + ". Experimenta outra velocidade!";
+      updateHud();
+      setState(won ? "won" : "lost");
+    }
+
+    function movePaddle(clientX) {
+      if (state !== "playing" && state !== "ready") return;
+      const rect = canvas.getBoundingClientRect();
+      // Converter coordenadas CSS em coordenadas internas do canvas (incluindo mobile).
+      const x = (clientX - rect.left) * W / rect.width;
+      paddle.x = Math.max(0, Math.min(W - paddle.width, x - paddle.width / 2));
+      if (state === "ready") attachBall();
+    }
+
+    canvas.addEventListener("pointermove", function(event) {
+      if (event.pointerType === "mouse" || event.buttons) movePaddle(event.clientX);
+    });
+    canvas.addEventListener("pointerdown", function(event) {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      event.preventDefault();
+      movePaddle(event.clientX);
+      if (state === "ready") launchBall();
+      if (event.pointerId !== undefined && canvas.setPointerCapture) {
+        try { canvas.setPointerCapture(event.pointerId); } catch (_) {}
+      }
+    });
+
+    document.addEventListener("keydown", function(event) {
+      const code = event.code;
+      if (["ArrowLeft", "ArrowRight", "Space", "KeyA", "KeyD"].includes(code)) {
+        // Não impedir interação normal com os botões quando o menu estiver aberto.
+        if (state !== "menu" && event.target.tagName !== "BUTTON") event.preventDefault();
+      }
+      if (code === "ArrowLeft" || code === "KeyA") keys.left = true;
+      if (code === "ArrowRight" || code === "KeyD") keys.right = true;
+      if (code === "Space" && state === "ready" && event.target.tagName !== "BUTTON") launchBall();
+      if ((code === "KeyP" || code === "Escape") && !event.repeat) togglePause();
+    });
+    document.addEventListener("keyup", function(event) {
+      if (event.code === "ArrowLeft" || event.code === "KeyA") keys.left = false;
+      if (event.code === "ArrowRight" || event.code === "KeyD") keys.right = false;
+    });
+    window.addEventListener("blur", function() {
+      keys.left = false;
+      keys.right = false;
+      if (state === "playing") togglePause();
+    });
+    document.addEventListener("visibilitychange", function() {
+      if (document.hidden && state === "playing") togglePause();
+    });
+
+    speedButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        selectedSpeed = button.dataset.speed;
+        speedButtons.forEach(function(option) {
+          option.setAttribute("aria-pressed", String(option === button));
+        });
+      });
+    });
+    document.getElementById("startButton").addEventListener("click", startNewGame);
+    document.getElementById("resumeButton").addEventListener("click", togglePause);
+    document.getElementById("pauseButton").addEventListener("click", togglePause);
+    document.getElementById("newButton").addEventListener("click", showMenu);
+    document.getElementById("pauseNewButton").addEventListener("click", showMenu);
+    document.getElementById("againButton").addEventListener("click", showMenu);
+
+    function circleHitsRect(rect) {
+      const nearestX = Math.max(rect.x, Math.min(ball.x, rect.x + rect.w));
+      const nearestY = Math.max(rect.y, Math.min(ball.y, rect.y + rect.h));
+      const dx = ball.x - nearestX;
+      const dy = ball.y - nearestY;
+      return dx * dx + dy * dy <= ball.r * ball.r;
+    }
+
+    function updatePhysics(dt) {
+      const prevX = ball.x;
+      const prevY = ball.y;
+      ball.x += ball.vx * dt;
+      ball.y += ball.vy * dt;
+
+      if (ball.x - ball.r <= 0) {
+        ball.x = ball.r;
+        ball.vx = Math.abs(ball.vx);
+      } else if (ball.x + ball.r >= W) {
+        ball.x = W - ball.r;
+        ball.vx = -Math.abs(ball.vx);
+      }
+      if (ball.y - ball.r <= 0) {
+        ball.y = ball.r;
+        ball.vy = Math.abs(ball.vy);
+      }
+
+      if (ball.vy > 0 && circleHitsRect({
+        x: paddle.x, y: paddle.y, w: paddle.width, h: paddle.height
+      }) && prevY + ball.r <= paddle.y + 6) {
+        ball.y = paddle.y - ball.r;
+        const hit = Math.max(-1, Math.min(1, (ball.x - paddle.x - paddle.width / 2) / (paddle.width / 2)));
+        const angle = hit * 67 * Math.PI / 180;
+        const speed = speedOptions[selectedSpeed];
+        ball.vx = Math.sin(angle) * speed;
+        ball.vy = -Math.cos(angle) * speed;
+      }
+
+      // Um só tijolo por subpasso impede colisões repetidas e pontos duplicados.
+      for (const brick of bricks) {
+        if (!brick.active || !circleHitsRect(brick)) continue;
+
+        if (brick.emoji === "🥐") {
+          brick.emoji = brickFoods[Math.floor(Math.random() * brickFoods.length)];
+          score += 10;
         } else {
-            canvas.width = 800;
-            canvas.height = 600;
+          brick.active = false;
+          remaining--;
+          score += 20;
         }
 
-        const ctx = canvas.getContext('2d');
-        const gameOverScreen = document.getElementById('gameOverScreen');
-        const scoreDisplay = document.getElementById('score');
-        const livesDisplay = document.getElementById('lives');
-
-        // Calcular escala baseado no tamanho do canvas
-        const REFERENCE_WIDTH = 800;
-        const scale = canvas.width / REFERENCE_WIDTH;
-
-        // Configurações do jogo (escaladas)
-        const PADDLE_WIDTH = 120 * scale;
-        const PADDLE_HEIGHT = 20 * scale;
-        const BALL_RADIUS = 10 * scale;
-        const BRICK_WIDTH = 60 * scale;
-        const BRICK_HEIGHT = 25 * scale;
-        const BRICK_GAP = 5 * scale;
-
-        // Tamanhos de fonte escalados
-        const BRICK_FONT_SIZE = Math.max(14, 20 * scale);
-        const PADDLE_FONT_SIZE = Math.max(10, 14 * scale);
-        const MESSAGE_FONT_SIZE = Math.max(20, 24 * scale);
-        const VICTORY_FONT_SIZE = Math.max(32, 48 * scale);
-
-        // Objetos do jogo
-        const paddle = {
-            x: canvas.width / 2 - PADDLE_WIDTH / 2,
-            y: canvas.height - 30 * scale,
-            width: PADDLE_WIDTH,
-            height: PADDLE_HEIGHT,
-            dx: 0
-        };
-
-        const ball = {
-            x: canvas.width / 2,
-            y: canvas.height - 60 * scale,
-            radius: BALL_RADIUS,
-            dx: 0,
-            dy: 0
-        };
-
-        let bricks = [];
-        let score = 0;
-        let lives = 1;
-        let gameActive = true;
-        let gameStarted = false;
-        let currentLevel = 1;
-        let levelTransitioning = false;
-        let transitionTimer = 0;
-        let level2Emoji = null;
-
-        // Lista de alimentos para o nível 2
-        const level2Foods = ['🥑', '🥝', '🍗', '🥬', '🍓', '🍇', '🍊', '🌶️', '🥕', '🫒', '🧀', '🍫', '🌽', '🍍', '🍒'];
-
-        // Gerar velocidade aleatória para a bola
-        function getRandomBallVelocity() {
-            const angle = (Math.random() * 60 - 30) * Math.PI / 180; // -30 a +30 graus
-            const speed = 7; // Aumentado de 5 para 7
-            return {
-                dx: Math.sin(angle) * speed,
-                dy: -Math.abs(Math.cos(angle)) * speed
-            };
+        const overlapX = Math.min(ball.x + ball.r - brick.x, brick.x + brick.w - (ball.x - ball.r));
+        const overlapY = Math.min(ball.y + ball.r - brick.y, brick.y + brick.h - (ball.y - ball.r));
+        if (overlapX < overlapY) {
+          if (prevX < brick.x + brick.w / 2) {
+            ball.x = brick.x - ball.r;
+            ball.vx = -Math.abs(ball.vx);
+          } else {
+            ball.x = brick.x + brick.w + ball.r;
+            ball.vx = Math.abs(ball.vx);
+          }
+        } else if (prevY < brick.y + brick.h / 2) {
+          ball.y = brick.y - ball.r;
+          ball.vy = -Math.abs(ball.vy);
+        } else {
+          ball.y = brick.y + brick.h + ball.r;
+          ball.vy = Math.abs(ball.vy);
         }
 
-        // Inicializar tijolos
-        function initBricks() {
-            bricks = [];
-            const bricksPerRow = 10;
-            const brickRows = 5;
-            const offsetLeft = 25 * scale;
-            const offsetTop = 40 * scale;
+        updateHud();
+        if (remaining === 0) finish(true);
+        break;
+      }
 
-            for (let row = 0; row < brickRows; row++) {
-                for (let col = 0; col < bricksPerRow; col++) {
-                    bricks.push({
-                        x: offsetLeft + col * (BRICK_WIDTH + BRICK_GAP),
-                        y: offsetTop + row * (BRICK_HEIGHT + BRICK_GAP),
-                        width: BRICK_WIDTH,
-                        height: BRICK_HEIGHT,
-                        active: true,
-                        emoji: '🥐' // Nível 1 começa com croissants
-                    });
-                }
-            }
+      if (state !== "playing") return;
+      if (ball.y - ball.r > H) {
+        lives--;
+        updateHud();
+        if (lives === 0) {
+          finish(false);
+        } else {
+          attachBall();
+          setState("ready");
         }
+      }
+    }
 
-        // Transformar croissants em alimentos aleatórios
-        function transformBricksToFood() {
-            bricks.forEach(brick => {
-                if (brick.active && brick.emoji === '🥐') {
-                    brick.emoji = level2Foods[Math.floor(Math.random() * level2Foods.length)];
-                }
-            });
+    function drawRoundedRect(x, y, w, h, radius) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, radius);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (const brick of bricks) {
+        if (!brick.active) continue;
+        ctx.fillStyle = brick.emoji === "🥐" ? "#31465a" : "#205d61";
+        ctx.strokeStyle = brick.emoji === "🥐" ? "#637e92" : "#51bfab";
+        ctx.lineWidth = 1.4;
+        drawRoundedRect(brick.x, brick.y, brick.w, brick.h, 6);
+        ctx.fill();
+        ctx.stroke();
+        ctx.font = "24px Arial, sans-serif";
+        ctx.fillText(brick.emoji, brick.x + brick.w / 2, brick.y + brick.h / 2 + 1);
+      }
+
+      ctx.fillStyle = "#ffae77";
+      drawRoundedRect(paddle.x, paddle.y, paddle.width, paddle.height, 8);
+      ctx.fill();
+      ctx.font = "bold 13px Arial, sans-serif";
+      ctx.fillStyle = "#252033";
+      ctx.fillText("🥐 Croissant Lover", paddle.x + paddle.width / 2, paddle.y + paddle.height / 2);
+
+      // Bola branca com símbolo de três pétalas, à semelhança da versão original.
+      ctx.save();
+      ctx.translate(ball.x, ball.y);
+      ctx.beginPath(); ctx.arc(0, 0, ball.r, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff"; ctx.fill();
+      ctx.strokeStyle = "#071521"; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = "#152b38";
+      [[0, -4], [-3.5, 2], [3.5, 2]].forEach(function(point) {
+        ctx.beginPath(); ctx.arc(point[0], point[1], 3.1, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function animate(timestamp) {
+      const elapsed = lastFrame ? Math.min((timestamp - lastFrame) / 1000, .05) : 0;
+      lastFrame = timestamp;
+      if (state === "playing" || state === "ready") {
+        const axis = Number(keys.right) - Number(keys.left);
+        if (axis !== 0) {
+          paddle.x = Math.max(0, Math.min(W - paddle.width, paddle.x + axis * 720 * elapsed));
+          if (state === "ready") attachBall();
         }
-
-        // Desenho dos tijolos com emoji do nível atual
-        function drawBricks() {
-            bricks.forEach(brick => {
-                if (brick.active) {
-                    ctx.font = `${BRICK_FONT_SIZE}px Arial`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(brick.emoji, brick.x + BRICK_WIDTH / 2, brick.y + BRICK_HEIGHT / 2);
-                }
-            });
+      }
+      if (state === "playing") {
+        accumulator += elapsed;
+        let steps = 0;
+        while (accumulator >= STEP && steps < 8 && state === "playing") {
+          updatePhysics(STEP);
+          accumulator -= STEP;
+          steps++;
         }
+        if (steps >= 8) accumulator = 0;
+      } else {
+        accumulator = 0;
+      }
+      draw();
+      requestAnimationFrame(animate);
+    }
 
-        // Desenho da plataforma
-        function drawPaddle() {
-            ctx.font = `bold ${PADDLE_FONT_SIZE}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('Croissant Lover', paddle.x + PADDLE_WIDTH / 2, paddle.y + PADDLE_HEIGHT / 2);
-        }
-
-        // Desenho da bola (Adidas Trefoil)
-        function drawBall() {
-            ctx.save();
-            ctx.translate(ball.x, ball.y);
-            
-            // Fundo circular branco
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Borda preta
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // Desenhar o trefoil Adidas (3 pétalas pretas)
-            ctx.fillStyle = '#000000';
-            const petalRadius = 4;
-            const petalDistance = 5;
-            
-            // Pétala superior
-            ctx.beginPath();
-            ctx.arc(0, -petalDistance, petalRadius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Pétala inferior esquerda
-            ctx.beginPath();
-            ctx.arc(-petalDistance * 0.866, petalDistance * 0.5, petalRadius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Pétala inferior direita
-            ctx.beginPath();
-            ctx.arc(petalDistance * 0.866, petalDistance * 0.5, petalRadius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.restore();
-        }
-
-        // Atualizar posição do paddle com o rato
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            paddle.x = mouseX - PADDLE_WIDTH / 2;
-            
-            // Limitar o paddle aos limites do canvas
-            if (paddle.x < 0) paddle.x = 0;
-            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
-        });
-
-        // Suporte a touch para telemóvel
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const touch = e.touches[0];
-            const touchX = touch.clientX - rect.left;
-            paddle.x = touchX - PADDLE_WIDTH / 2;
-            
-            // Limitar o paddle aos limites do canvas
-            if (paddle.x < 0) paddle.x = 0;
-            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
-        }, { passive: false });
-
-        // Iniciar o jogo com touch
-        canvas.addEventListener('touchstart', startGame);
-        canvas.addEventListener('click', startGame);
-
-        // Iniciar o jogo
-        function startGame() {
-            if (!gameStarted && gameActive) {
-                gameStarted = true;
-                const velocity = getRandomBallVelocity();
-                ball.dx = velocity.dx;
-                ball.dy = velocity.dy;
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                startGame();
-            }
-        });
-
-        // Detectar colisão entre bola e tijolo
-        function checkBrickCollision() {
-            bricks.forEach(brick => {
-                if (brick.active) {
-                    if (ball.x + ball.radius > brick.x &&
-                        ball.x - ball.radius < brick.x + brick.width &&
-                        ball.y + ball.radius > brick.y &&
-                        ball.y - ball.radius < brick.y + brick.height) {
-                        
-                        // Se é croissant, transformar em alimento; se é alimento, destruir
-                        if (brick.emoji === '🥐') {
-                            brick.emoji = level2Foods[Math.floor(Math.random() * level2Foods.length)];
-                        } else {
-                            brick.active = false;
-                        }
-                        
-                        score += 10;
-                        scoreDisplay.textContent = score;
-                        
-                        // Inverter a direção da bola
-                        ball.dy = -ball.dy;
-                    }
-                }
-            });
-        }
-
-        // Detectar colisão entre bola e plataforma
-        function checkPaddleCollision() {
-            if (ball.dy > 0 &&
-                ball.x > paddle.x &&
-                ball.x < paddle.x + paddle.width &&
-                ball.y + ball.radius > paddle.y &&
-                ball.y - ball.radius < paddle.y + paddle.height) {
-                
-                ball.dy = -ball.dy;
-                
-                // Adicionar spin baseado na posição do impacto
-                const hitPos = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
-                ball.dx += hitPos * 3;
-            }
-        }
-
-        // Atualizar lógica do jogo
-        function update() {
-            if (!gameStarted || !gameActive) return;
-
-            // Mover bola
-            ball.x += ball.dx;
-            ball.y += ball.dy;
-
-            // Colisão com as paredes
-            if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
-                ball.dx = -ball.dx;
-            }
-            if (ball.y - ball.radius < 0) {
-                ball.dy = -ball.dy;
-            }
-
-            // Perder a bola
-            if (ball.y - ball.radius > canvas.height) {
-                lives--;
-                livesDisplay.textContent = lives;
-                
-                if (lives <= 0) {
-                    gameActive = false;
-                    gameOverScreen.classList.add('show');
-                } else {
-                    // Reset
-                    ball.x = canvas.width / 2;
-                    ball.y = canvas.height - 60 * scale;
-                    const velocity = getRandomBallVelocity();
-                    ball.dx = velocity.dx;
-                    ball.dy = velocity.dy;
-                    gameStarted = false;
-                }
-            }
-
-            checkBrickCollision();
-            checkPaddleCollision();
-
-            // Verificar vitória
-            if (bricks.every(brick => !brick.active || brick.emoji === '🥐') === false && 
-                bricks.filter(brick => brick.active && brick.emoji !== '🥐').length === 0) {
-                gameActive = false;
-            }
-        }
-
-        // Desenhar o jogo
-        function draw() {
-            // Limpar canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Desenhar elementos
-            drawBricks();
-            drawPaddle();
-            drawBall();
-
-            // Mensagem inicial
-            if (!gameStarted && gameActive) {
-                ctx.font = `bold ${MESSAGE_FONT_SIZE}px Arial`;
-                ctx.fillStyle = '#4ecdc4';
-                ctx.textAlign = 'center';
-                ctx.fillText('Click or press SPACE to start', canvas.width / 2, canvas.height / 2);
-            }
-
-            // Verificar vitória final
-            if (!gameActive) {
-                ctx.font = `bold ${VICTORY_FONT_SIZE}px Arial`;
-                ctx.fillStyle = '#4ecdc4';
-                ctx.textAlign = 'center';
-                ctx.fillText('🎉 VICTORY! You are a true 🥐 with stuff inside lover! 🎉', canvas.width / 2, canvas.height / 2 - 30 * scale);
-            }
-
-            // Loop
-            update();
-            requestAnimationFrame(draw);
-        }
-
-        // Inicializar
-        initBricks();
-        draw();
-    </script>
+    buildBricks();
+    attachBall();
+    updateHud();
+    setState("menu");
+    requestAnimationFrame(animate);
+  </script>
 </body>
 </html>
